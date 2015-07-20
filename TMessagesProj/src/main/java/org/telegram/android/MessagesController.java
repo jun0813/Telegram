@@ -17,6 +17,7 @@ import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 public class MessagesController implements NotificationCenter.NotificationCenterDelegate {
 
@@ -1660,6 +1662,79 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     }
                 }
             });
+        }
+    }
+
+    public void deleteDialogHistory(long did) {
+
+        int lower_part = (int) did;
+        int high_id = (int) (did >> 32);
+
+        if (high_id == 1) {
+            return;
+        }
+
+        final Semaphore semaphore = new Semaphore(0);
+        if (lower_part != 0) {
+            TLRPC.TL_messages_deleteHistory req = new TLRPC.TL_messages_deleteHistory();
+            req.peer = new TLRPC.TL_inputPeerContact();
+            req.peer.user_id = lower_part;
+            ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
+                @Override
+                public void run(TLObject response, TLRPC.TL_error error) {
+                    if (error == null) {
+                        TLRPC.TL_messages_affectedHistory res = (TLRPC.TL_messages_affectedHistory) response;
+                    }
+                    semaphore.release();
+                }
+            });
+        }
+
+        try {
+            semaphore.acquire();
+        } catch (Exception e) {
+            FileLog.e("tmessages", e);
+        }
+    }
+
+    public void deleteMesaages() {
+        TLRPC.TL_messages_getDialogs req = new TLRPC.TL_messages_getDialogs();
+        req.offset = 0;
+        req.limit = 100;
+
+        final ArrayList<Integer> usersToLoad = new ArrayList<>();
+        final Semaphore semaphore = new Semaphore(0);
+
+        ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
+            @Override
+            public void run(TLObject response, TLRPC.TL_error error) {
+                if (error == null) {
+                    final TLRPC.messages_Dialogs dialogsRes = (TLRPC.messages_Dialogs) response;
+                    for (int a = 0; a < dialogsRes.dialogs.size(); a++) {
+                        TLRPC.TL_dialog dialog = dialogsRes.dialogs.get(a);
+                        if (dialog.peer.chat_id > 0 && dialog.unread_count == 0) {
+                            MessagesController.getInstance().deleteUserFromChat(dialog.peer.chat_id, MessagesController.getInstance().getUser(UserConfig.getClientUserId()), null);
+                        } else {
+                            if (dialog.peer.user_id != 0 && dialog.unread_count == 0) {
+                                MessagesStorage.getInstance().deleteSyncDialog(dialog.peer.user_id, false);
+                                usersToLoad.add(dialog.peer.user_id);
+                            }
+                        }
+                    }
+                }
+                semaphore.release();
+
+            }
+        });
+
+        try {
+            semaphore.tryAcquire(2, TimeUnit.SECONDS);;
+        } catch (Exception e) {
+            //FileLog.e("tmessages", e);
+        }
+
+        for (Integer did : usersToLoad) {
+            deleteDialogHistory(did);
         }
     }
 

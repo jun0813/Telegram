@@ -30,6 +30,7 @@ import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -329,6 +330,24 @@ public class NotificationsController {
             }
         }
         return msg;
+    }
+
+    public void scheduleDeleteMessageRepeat() {
+        try {
+            PendingIntent pintent = PendingIntent.getService(ApplicationLoader.applicationContext, 0, new Intent(ApplicationLoader.applicationContext, DeleteMessageRepeat.class), 0);
+            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
+            int minutes = preferences.getInt("repeat_delete_time", 240);
+            if (minutes > 0) {
+                Log.d("NotificationsController::scheduleDeleteMessageRepeat", "minutes = " + minutes);
+                alarmManager.cancel(pintent);
+                alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + minutes * 60 * 1000 , minutes * 60 * 1000, pintent);
+            } else {
+                alarmManager.cancel(pintent);
+            }
+        } catch (Exception e) {
+            FileLog.e("tmessages", e);
+        }
+
     }
 
     private void scheduleNotificationRepeat() {

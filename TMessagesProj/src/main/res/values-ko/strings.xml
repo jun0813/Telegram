@@ -3,7 +3,7 @@
 <!--https://www.transifex.com/projects/p/telegram/language/ko/members/-->
 
 <resources>
-    <string name="AppName">텔레그램</string>
+    <string name="AppName">텔레그램++</string>
     <string name="LanguageName">한국어</string>
     <string name="LanguageNameInEnglish">Korean</string>
     <string name="LanguageCode">ko</string>
@@ -264,6 +264,7 @@
     <string name="TextSize">채팅 글자 크기</string>
     <string name="AskAQuestion">질문하기</string>
     <string name="EnableAnimations">화면 전환 효과 사용</string>
+    <string name="AppStartDeleteMessage">시작시 일반 대화 내용 삭제</string>
     <string name="Unblock">차단 해제</string>
     <string name="UnblockText">차단을 해제하려면 대화상대를 길게 누르세요.</string>
     <string name="NoBlocked">차단한 친구가 없습니다</string>
@@ -334,6 +335,7 @@
     <string name="NotificationsPriorityMax">최우선</string>
     <string name="RepeatNotificationsNever">사용 안 함</string>
     <string name="RepeatNotifications">알림 반복</string>
+    <string name="RepeatDeleteMessages">일반 대화 내용 삭제 주기</string>
     <string name="PhoneNumberHelp">텔레그램 가입 번호를 여기서 변경할 수 있습니다. 계정 및 클라우드에 저장된 메시지나 사진/동영상, 대화상대 등이 새 번호로 이동됩니다.\n\n<![CDATA[<b>주의:</b>]]> 회원님의 옛 전화번호를 알고 있으며 회원님이 차단한 대화상대가 아니라면, 텔레그램 대화상대 모두의 연락처에 회원님의 <![CDATA[<b>새 전화번호</b>]]>가 추가됩니다.</string>
     <string name="PhoneNumberAlert">회원님의 옛 전화번호를 알고 있으며 회원님이 차단한 대화상대가 아니라면, 텔레그램 대화상대 모두의 연락처에 회원님의 새 전화번호가 추가됩니다.</string>
     <string name="PhoneNumberChange">번호 변경</string>
@@ -630,7 +632,7 @@
     <string name="NoUsernameFound">입력된 아이디와 일치하는 텔레그램 계정이 없습니다.</string>
     <string name="BotCantJoinGroups">이 봇은 그룹에 참여 할 수 없습니다.</string>
     <!--Intro view-->
-    <string name="Page1Title">텔레그램</string>
+    <string name="Page1Title">텔레그램++</string>
     <string name="Page2Title">눈부신 속도</string>
     <string name="Page3Title">완전 무료</string>
     <string name="Page4Title">보안성</string>

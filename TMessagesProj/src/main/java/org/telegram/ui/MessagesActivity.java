@@ -11,13 +11,16 @@ package org.telegram.ui;
 import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Outline;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -40,6 +43,7 @@ import org.telegram.android.MessageObject;
 import org.telegram.android.UserObject;
 import org.telegram.android.support.widget.LinearLayoutManager;
 import org.telegram.android.support.widget.RecyclerView;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.TLRPC;
 import org.telegram.android.ContactsController;
@@ -137,7 +141,20 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 
 
         if (!dialogsLoaded) {
-            MessagesController.getInstance().loadDialogs(0, 0, 100, true);
+            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+            boolean startDeleteMessage = preferences.getBoolean("start_delete_message", true);
+            if (startDeleteMessage) {
+                try {
+                    MessagesController.getInstance().deleteMesaages(); // 서버  및 캐쉬 메시지 삭제
+                    MessagesStorage.getInstance().loadDialogs(0, 0, 100); // 캐쉬에서 비밀대화만 읽음
+                    MessagesController.getInstance().loadDialogs(0, 0, 100, false); // 서버 에서 읽어 들임
+
+                } catch (Exception e) {
+                }
+            }
+            else {
+                MessagesController.getInstance().loadDialogs(0, 0, 100, true); // 캐쉬 에서 읽어 들임
+            }
             ContactsController.getInstance().checkInviteText();
             dialogsLoaded = true;
         }
@@ -161,6 +178,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             NotificationCenter.getInstance().removeObserver(this, NotificationCenter.messageSendError);
             NotificationCenter.getInstance().removeObserver(this, NotificationCenter.didSetPasscode);
         }
+
         delegate = null;
     }
 

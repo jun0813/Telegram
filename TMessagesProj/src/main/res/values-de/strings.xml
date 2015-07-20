@@ -815,6 +815,9 @@
     <string name="AndOther_few">und %1$d andere</string>
     <string name="AndOther_many">und %1$d andere</string>
     <string name="AndOther_other">und %1$d andere</string>
+    <string name="AppStartDeleteMessage">AppStartDeleteMessage</string>
+    <string name="RepeatDeleteMessages">RepeatDeleteMessages</string>
+
     <!--date formatters-->
     <string name="formatterMonthYear">MMMM yyyy</string>
     <string name="formatterMonth">dd MMM</string>

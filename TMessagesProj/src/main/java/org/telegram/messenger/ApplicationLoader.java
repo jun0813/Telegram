@@ -32,6 +32,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.telegram.android.AndroidUtilities;
 import org.telegram.android.ContactsController;
 import org.telegram.android.MediaController;
+import org.telegram.android.NotificationsController;
 import org.telegram.android.NotificationsService;
 import org.telegram.android.SendMessagesHelper;
 import org.telegram.android.LocaleController;
@@ -164,6 +165,7 @@ public class ApplicationLoader extends Application {
             ConnectionsManager.getInstance().initPushConnection();
             MessagesController.getInstance().getBlockedUsers(true);
             SendMessagesHelper.getInstance().checkUnsentMessages();
+            NotificationsController.getInstance().scheduleDeleteMessageRepeat();
         }
 
         ApplicationLoader app = (ApplicationLoader)ApplicationLoader.applicationContext;

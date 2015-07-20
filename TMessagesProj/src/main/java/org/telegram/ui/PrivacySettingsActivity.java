@@ -8,10 +8,12 @@
 
 package org.telegram.ui;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,8 @@ import org.telegram.android.AndroidUtilities;
 import org.telegram.android.ContactsController;
 import org.telegram.android.LocaleController;
 import org.telegram.android.NotificationCenter;
+import org.telegram.android.NotificationsController;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.ConnectionsManager;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
@@ -34,6 +38,8 @@ import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Adapters.BaseFragmentAdapter;
 import org.telegram.ui.Cells.HeaderCell;
+import org.telegram.ui.Cells.TextCheckCell;
+import org.telegram.ui.Cells.TextDetailSettingsCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
@@ -43,6 +49,7 @@ import java.util.ArrayList;
 public class PrivacySettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private ListAdapter listAdapter;
+    private ListView listView;
 
     private int privacySectionRow;
     private int blockedRow;
@@ -50,6 +57,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
     private int lastSeenDetailRow;
     private int securitySectionRow;
     private int sessionsRow;
+    private int enableStartdeleteMessagesRow;
+    private int repeatDeleteMessagesRow;
     private int passwordRow;
     private int passcodeRow;
     private int sessionsDetailRow;
@@ -70,6 +79,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         lastSeenRow = rowCount++;
         lastSeenDetailRow = rowCount++;
         securitySectionRow = rowCount++;
+        enableStartdeleteMessagesRow = rowCount++;
+        repeatDeleteMessagesRow = rowCount++;
         passcodeRow = rowCount++;
         passwordRow = rowCount++;
         sessionsRow = rowCount++;
@@ -109,7 +120,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         FrameLayout frameLayout = (FrameLayout) fragmentView;
         frameLayout.setBackgroundColor(0xfff0f0f0);
 
-        ListView listView = new ListView(context);
+        listView = new ListView(context);
         listView.setDivider(null);
         listView.setDividerHeight(0);
         listView.setVerticalScrollBarEnabled(false);
@@ -189,6 +200,54 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                     } else {
                         presentFragment(new PasscodeActivity(0));
                     }
+                } else if (i == enableStartdeleteMessagesRow) {
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                    boolean startDeleteMessage = preferences.getBoolean("start_delete_message", true);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("start_delete_message", !startDeleteMessage);
+                    editor.commit();
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(!startDeleteMessage);
+                    }
+                } else if (i == repeatDeleteMessagesRow) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                    builder.setTitle(LocaleController.getString("RepeatDeleteMessages", R.string.RepeatDeleteMessages));
+                    builder.setItems(new CharSequence[] {
+                                    LocaleController.getString("RepeatDisabled", R.string.RepeatDisabled),
+                                    LocaleController.formatPluralString("Minutes", 5),
+                                    LocaleController.formatPluralString("Minutes", 10),
+                                    LocaleController.formatPluralString("Minutes", 30),
+                                    LocaleController.formatPluralString("Hours", 1),
+                                    LocaleController.formatPluralString("Hours", 2),
+                                    LocaleController.formatPluralString("Hours", 4)
+                            }, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    int minutes = 0;
+                                    if (which == 1) {
+                                        minutes = 5;
+                                    } else if (which == 2) {
+                                        minutes = 10;
+                                    } else if (which == 3) {
+                                        minutes = 30;
+                                    } else if (which == 4) {
+                                        minutes = 60;
+                                    } else if (which == 5) {
+                                        minutes = 60 * 2;
+                                    } else if (which == 6) {
+                                        minutes = 60 * 4;
+                                    }
+                                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
+                                    preferences.edit().putInt("repeat_delete_time", minutes).commit();
+                                    if (listView != null) {
+                                        listView.invalidateViews();
+                                    }
+                                    NotificationsController.getInstance().scheduleDeleteMessageRepeat();
+                                }
+                            }
+                    );
+                    builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                    showDialog(builder.create());
                 }
             }
         });
@@ -276,7 +335,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
 
         @Override
         public boolean isEnabled(int i) {
-            return i == passcodeRow || i == passwordRow || i == blockedRow || i == sessionsRow || i == lastSeenRow && !ContactsController.getInstance().getLoadingLastSeenInfo() || i == deleteAccountRow && !ContactsController.getInstance().getLoadingDeleteInfo();
+            return i == passcodeRow || i == passwordRow || i == blockedRow || i == sessionsRow || i == enableStartdeleteMessagesRow || i == repeatDeleteMessagesRow ||
+                    i == lastSeenRow && !ContactsController.getInstance().getLoadingLastSeenInfo() || i == deleteAccountRow && !ContactsController.getInstance().getLoadingDeleteInfo();
         }
 
         @Override
@@ -366,6 +426,36 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                 } else if (i == deleteAccountSectionRow) {
                     ((HeaderCell) view).setText(LocaleController.getString("DeleteAccountTitle", R.string.DeleteAccountTitle));
                 }
+            } else if (type == 3) {
+                if (view == null) {
+                    view = new TextCheckCell(mContext);
+                    view.setBackgroundColor(0xffffffff);
+                }
+                if (i == enableStartdeleteMessagesRow) {
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                    ((TextCheckCell) view).setTextAndCheck(LocaleController.getString("AppStartDeleteMessage", R.string.AppStartDeleteMessage), preferences.getBoolean("start_delete_message", true), false);
+                }
+            } else if (type == 4) {
+                if (view == null) {
+                    view = new TextDetailSettingsCell(mContext);
+                    view.setBackgroundColor(0xffffffff);
+                }
+                if (i == repeatDeleteMessagesRow) {
+                    TextDetailSettingsCell textCell = (TextDetailSettingsCell) view;
+                    textCell.setMultilineDetail(false);
+
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
+                    int minutes = preferences.getInt("repeat_delete_time", 240);
+                    String value;
+                    if (minutes == 0) {
+                        value = LocaleController.getString("RepeatNotificationsNever", R.string.RepeatNotificationsNever);
+                    } else if (minutes < 60) {
+                        value = LocaleController.formatPluralString("Minutes", minutes);
+                    } else {
+                        value = LocaleController.formatPluralString("Hours", minutes / 60);
+                    }
+                    textCell.setTextAndValue(LocaleController.getString("RepeatDeleteMessages", R.string.RepeatDeleteMessages), value, false);
+                }
             }
             return view;
         }
@@ -378,13 +468,17 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                 return 1;
             } else if (i == securitySectionRow || i == deleteAccountSectionRow || i == privacySectionRow) {
                 return 2;
+            } else if (i == enableStartdeleteMessagesRow) {
+                return 3;
+            } else if (i == repeatDeleteMessagesRow) {
+                return 4;
             }
             return 0;
         }
 
         @Override
         public int getViewTypeCount() {
-            return 3;
+            return 5;
         }
 
         @Override

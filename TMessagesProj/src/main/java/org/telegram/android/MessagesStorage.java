@@ -879,6 +879,107 @@ public class MessagesStorage {
         });
     }
 
+    public void deleteDialog() {
+        storageQueue.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    database.executeFast("DELETE FROM dialogs WHERE 1").stepThis().dispose();
+                    database.executeFast("DELETE FROM chat_settings WHERE 1").stepThis().dispose();
+                    database.executeFast("DELETE FROM messages WHERE 1").stepThis().dispose();
+                    database.executeFast("DELETE FROM chats WHERE 1").stepThis().dispose();
+                    database.executeFast("DELETE FROM enc_chats WHERE 1").stepThis().dispose();
+                    database.executeFast("DELETE FROM messages_seq WHERE 1").stepThis().dispose();
+                } catch (Exception e) {
+                    cleanUp(true);
+                }
+            }
+            });
+    }
+
+    public void deleteSyncDialog(final long did, final boolean messagesOnly) {
+        try {
+            if (!messagesOnly) {
+                database.executeFast("DELETE FROM dialogs WHERE did = " + did).stepThis().dispose();
+                database.executeFast("DELETE FROM chat_settings WHERE uid = " + did).stepThis().dispose();
+                int lower_id = (int)did;
+                int high_id = (int)(did >> 32);
+                if (lower_id != 0) {
+                    if (high_id == 1) {
+                        database.executeFast("DELETE FROM chats WHERE uid = " + lower_id).stepThis().dispose();
+                    } else if (lower_id < 0) {
+                        database.executeFast("DELETE FROM chats WHERE uid = " + (-lower_id)).stepThis().dispose();
+                    }
+                } else {
+                    database.executeFast("DELETE FROM enc_chats WHERE uid = " + high_id).stepThis().dispose();
+                    //database.executeFast("DELETE FROM secret_holes WHERE uid = " + high_id).stepThis().dispose();
+                }
+            }
+
+            if ((int) did == 0) {
+                SQLiteCursor cursor = database.queryFinalized("SELECT data FROM messages WHERE uid = " + did);
+                ArrayList<File> filesToDelete = new ArrayList<>();
+                try {
+                    while (cursor.next()) {
+                        ByteBufferDesc data = buffersStorage.getFreeBuffer(cursor.byteArrayLength(0));
+                        if (data != null && cursor.byteBufferValue(0, data.buffer) != 0) {
+                            TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
+                            if (message == null || message.media == null) {
+                                continue;
+                            }
+                            if (message.media instanceof TLRPC.TL_messageMediaAudio) {
+                                File file = FileLoader.getPathToAttach(message.media.audio);
+                                if (file != null && file.toString().length() > 0) {
+                                    filesToDelete.add(file);
+                                }
+                            } else if (message.media instanceof TLRPC.TL_messageMediaPhoto) {
+                                for (TLRPC.PhotoSize photoSize : message.media.photo.sizes) {
+                                    File file = FileLoader.getPathToAttach(photoSize);
+                                    if (file != null && file.toString().length() > 0) {
+                                        filesToDelete.add(file);
+                                    }
+                                }
+                            } else if (message.media instanceof TLRPC.TL_messageMediaVideo) {
+                                File file = FileLoader.getPathToAttach(message.media.video);
+                                if (file != null && file.toString().length() > 0) {
+                                    filesToDelete.add(file);
+                                }
+                                file = FileLoader.getPathToAttach(message.media.video.thumb);
+                                if (file != null && file.toString().length() > 0) {
+                                    filesToDelete.add(file);
+                                }
+                            } else if (message.media instanceof TLRPC.TL_messageMediaDocument) {
+                                File file = FileLoader.getPathToAttach(message.media.document);
+                                if (file != null && file.toString().length() > 0) {
+                                    filesToDelete.add(file);
+                                }
+                                file = FileLoader.getPathToAttach(message.media.document.thumb);
+                                if (file != null && file.toString().length() > 0) {
+                                    filesToDelete.add(file);
+                                }
+                            }
+                        }
+                        buffersStorage.reuseFreeBuffer(data);
+                    }
+                } catch (Exception e) {
+                    FileLog.e("tmessages", e);
+                }
+                cursor.dispose();
+                FileLoader.getInstance().deleteFiles(filesToDelete);
+            }
+
+            database.executeFast("UPDATE dialogs SET unread_count = 0 WHERE did = " + did).stepThis().dispose();
+            database.executeFast("DELETE FROM messages WHERE uid = " + did).stepThis().dispose();
+            database.executeFast("DELETE FROM bot_keyboard WHERE uid = " + did).stepThis().dispose();
+            database.executeFast("DELETE FROM media_counts_v2 WHERE uid = " + did).stepThis().dispose();
+            database.executeFast("DELETE FROM media_v2 WHERE uid = " + did).stepThis().dispose();
+            BotQuery.clearBotKeyboard(did, null);
+        } catch (Exception e) {
+            FileLog.e("tmessages", e);
+        }
+
+    }
+
     public void deleteDialog(final long did, final boolean messagesOnly) {
         storageQueue.postRunnable(new Runnable() {
             @Override
@@ -2916,7 +3017,9 @@ public class MessagesStorage {
                 state.bindInteger(3, MessageObject.getUnreadFlags(message));
                 state.bindInteger(4, message.send_state);
                 state.bindInteger(5, message.date);
-                state.bindByteBuffer(6, data.buffer);
+                if (message instanceof TLRPC.TL_message_secret) {
+                    state.bindByteBuffer(6, data.buffer);
+                }
                 state.bindInteger(7, (MessageObject.isOut(message) ? 1 : 0));
                 state.bindInteger(8, message.ttl);
                 state.bindInteger(9, getMessageMediaType(message));
@@ -3738,7 +3841,9 @@ public class MessagesStorage {
                             state.bindInteger(3, MessageObject.getUnreadFlags(message));
                             state.bindInteger(4, message.send_state);
                             state.bindInteger(5, message.date);
-                            state.bindByteBuffer(6, data.buffer);
+                            if (message instanceof TLRPC.TL_message_secret) {
+                                state.bindByteBuffer(6, data.buffer);
+                            }
                             state.bindInteger(7, (MessageObject.isOut(message) ? 1 : 0));
                             state.bindInteger(8, 0);
                             state.bindInteger(9, 0);
@@ -3777,6 +3882,106 @@ public class MessagesStorage {
             }
         });
     }
+
+    public void loadDialogs(final int offset, final int serverOffset, final int count) {
+        storageQueue.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                TLRPC.messages_Dialogs dialogs = new TLRPC.messages_Dialogs();
+                ArrayList<TLRPC.EncryptedChat> encryptedChats = new ArrayList<>();
+                try {
+                    ArrayList<Integer> usersToLoad = new ArrayList<>();
+                    usersToLoad.add(UserConfig.getClientUserId());
+                    ArrayList<Integer> chatsToLoad = new ArrayList<>();
+                    ArrayList<Integer> encryptedToLoad = new ArrayList<>();
+                    SQLiteCursor cursor = database.queryFinalized(String.format(Locale.US, "SELECT d.did, d.last_mid, d.unread_count, d.date, m.data, m.read_state, m.mid, m.send_state, s.flags, m.date FROM dialogs as d LEFT JOIN messages as m ON d.last_mid = m.mid LEFT JOIN dialog_settings as s ON d.did = s.did ORDER BY d.date DESC LIMIT %d,%d", offset, count));
+                    while (cursor.next()) {
+                        TLRPC.TL_dialog dialog = new TLRPC.TL_dialog();
+                        dialog.id = cursor.longValue(0);
+                        dialog.top_message = cursor.intValue(1);
+                        dialog.unread_count = cursor.intValue(2);
+                        dialog.last_message_date = cursor.intValue(3);
+                        long flags = cursor.longValue(8);
+                        int low_flags = (int)flags;
+                        dialog.notify_settings = new TLRPC.TL_peerNotifySettings();
+                        if ((low_flags & 1) != 0) {
+                            dialog.notify_settings.mute_until = (int)(flags >> 32);
+                            if (dialog.notify_settings.mute_until == 0) {
+                                dialog.notify_settings.mute_until = Integer.MAX_VALUE;
+                            }
+                        }
+
+                        ByteBufferDesc data = buffersStorage.getFreeBuffer(cursor.byteArrayLength(4));
+                        if (data != null && cursor.byteBufferValue(4, data.buffer) != 0) {
+                            TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
+                            if (message != null) {
+                                MessageObject.setUnreadFlags(message, cursor.intValue(5));
+                                message.id = cursor.intValue(6);
+                                int date = cursor.intValue(9);
+                                if (date != 0) {
+                                    dialog.last_message_date = date;
+                                }
+                                message.send_state = cursor.intValue(7);
+
+                                if (!usersToLoad.contains(message.from_id)) {
+                                    usersToLoad.add(message.from_id);
+                                }
+                                if (message.action != null && message.action.user_id != 0) {
+                                    if (!usersToLoad.contains(message.action.user_id)) {
+                                        usersToLoad.add(message.action.user_id);
+                                    }
+                                }
+                                if (message.fwd_from_id != 0) {
+                                    if (!usersToLoad.contains(message.fwd_from_id)) {
+                                        usersToLoad.add(message.fwd_from_id);
+                                    }
+                                }
+                            }
+                        }
+                        buffersStorage.reuseFreeBuffer(data);
+
+                        int lower_id = (int)dialog.id;
+                        int high_id = (int)(dialog.id >> 32);
+                        if (lower_id != 0) {
+                            if (high_id == 1) {
+                                if (!chatsToLoad.contains(lower_id)) {
+                                    chatsToLoad.add(lower_id);
+                                }
+                            } else {
+                                if (lower_id > 0) {
+                                    if (!usersToLoad.contains(lower_id)) {
+                                        usersToLoad.add(lower_id);
+                                    }
+                                } else {
+                                    if (!chatsToLoad.contains(-lower_id)) {
+                                        chatsToLoad.add(-lower_id);
+                                    }
+                                }
+                            }
+                        } else {
+                            if (!encryptedToLoad.contains(high_id)) {
+                                encryptedToLoad.add(high_id);
+                                dialogs.dialogs.add(dialog);
+
+                            }
+                        }
+                    }
+                    cursor.dispose();
+
+                    if (!encryptedToLoad.isEmpty()) {
+                        getEncryptedChatsInternal(TextUtils.join(",", encryptedToLoad), encryptedChats, usersToLoad);
+                    }
+                    else {
+                        return;
+                    }
+                    MessagesController.getInstance().processLoadedDialogs(dialogs, encryptedChats, offset, serverOffset, count, true, false);
+                } catch (Exception e) {
+                }
+            }
+        });
+    }
+
+
 
     public void getDialogs(final int offset, final int serverOffset, final int count) {
         storageQueue.postRunnable(new Runnable() {
@@ -3939,7 +4144,9 @@ public class MessagesStorage {
                                 state.bindInteger(3, MessageObject.getUnreadFlags(message));
                                 state.bindInteger(4, message.send_state);
                                 state.bindInteger(5, message.date);
-                                state.bindByteBuffer(6, data.buffer);
+                                if (message instanceof TLRPC.TL_message_secret) {
+                                    state.bindByteBuffer(6, data.buffer);
+                                }
                                 state.bindInteger(7, (MessageObject.isOut(message) ? 1 : 0));
                                 state.bindInteger(8, 0);
                                 state.bindInteger(9, 0);

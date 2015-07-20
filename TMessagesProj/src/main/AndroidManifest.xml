@@ -159,6 +159,7 @@
                 android:resource="@xml/contacts" />
         </service>
 
+        <service android:name="org.telegram.android.DeleteMessageRepeat" android:enabled="true"/>
         <service android:name="org.telegram.android.NotificationsService" android:enabled="true"/>
         <service android:name="org.telegram.android.NotificationRepeat" android:exported="false"/>
         <service android:name="org.telegram.android.NotificationDelay" android:exported="false"/>
