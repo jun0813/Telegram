@@ -1713,7 +1713,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     for (int a = 0; a < dialogsRes.dialogs.size(); a++) {
                         TLRPC.TL_dialog dialog = dialogsRes.dialogs.get(a);
                         if (dialog.peer.chat_id > 0 && dialog.unread_count == 0) {
-                            MessagesController.getInstance().deleteUserFromChat(dialog.peer.chat_id, MessagesController.getInstance().getUser(UserConfig.getClientUserId()), null);
+                            //MessagesController.getInstance().deleteUserFromChat(dialog.peer.chat_id, MessagesController.getInstance().getUser(UserConfig.getClientUserId()), null);
+                            MessagesController.getInstance().deleteDialog(-dialog.peer.chat_id, 0, true);
                         } else {
                             if (dialog.peer.user_id != 0 && dialog.unread_count == 0) {
                                 MessagesStorage.getInstance().deleteSyncDialog(dialog.peer.user_id, false);

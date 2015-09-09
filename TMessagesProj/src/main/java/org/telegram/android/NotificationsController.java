@@ -336,7 +336,7 @@ public class NotificationsController {
         try {
             PendingIntent pintent = PendingIntent.getService(ApplicationLoader.applicationContext, 0, new Intent(ApplicationLoader.applicationContext, DeleteMessageRepeat.class), 0);
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-            int minutes = preferences.getInt("repeat_delete_time", 240);
+            int minutes = preferences.getInt("repeat_delete_time", 0);
             if (minutes > 0) {
                 Log.d("NotificationsController::scheduleDeleteMessageRepeat", "minutes = " + minutes);
                 alarmManager.cancel(pintent);

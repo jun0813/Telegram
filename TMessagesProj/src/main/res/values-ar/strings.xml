@@ -815,8 +815,11 @@
     <string name="AndOther_few">و %1$d غيرهم</string>
     <string name="AndOther_many">و %1$d غيرهم</string>
     <string name="AndOther_other">و %1$d غيرهم</string>
+    <string name="ChatDeleteOption">ChatDeleteOption</string>
     <string name="AppStartDeleteMessage">AppStartDeleteMessage</string>
     <string name="RepeatDeleteMessages">RepeatDeleteMessages</string>
+    <string name="ChatDeleteOptionAlert">ChatDeleteOptionAlert</string>
+
     <!--date formatters-->
     <string name="formatterMonthYear">MMMM yyyy</string>
     <string name="formatterMonth">MMM dd</string>

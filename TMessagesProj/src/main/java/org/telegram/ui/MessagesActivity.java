@@ -142,12 +142,12 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 
         if (!dialogsLoaded) {
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-            boolean startDeleteMessage = preferences.getBoolean("start_delete_message", true);
+            boolean startDeleteMessage = preferences.getBoolean("start_delete_message", false);
             if (startDeleteMessage) {
                 try {
                     MessagesController.getInstance().deleteMesaages(); // 서버  및 캐쉬 메시지 삭제
-                    MessagesStorage.getInstance().loadDialogs(0, 0, 100); // 캐쉬에서 비밀대화만 읽음
-                    MessagesController.getInstance().loadDialogs(0, 0, 100, false); // 서버 에서 읽어 들임
+                    //MessagesStorage.getInstance().loadDialogs(0, 0, 100); // 캐쉬에서 비밀대화만 읽음
+                    MessagesController.getInstance().loadDialogs(0, 0, 100, true);
 
                 } catch (Exception e) {
                 }

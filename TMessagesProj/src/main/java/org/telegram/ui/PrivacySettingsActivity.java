@@ -202,7 +202,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                     }
                 } else if (i == enableStartdeleteMessagesRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-                    boolean startDeleteMessage = preferences.getBoolean("start_delete_message", true);
+                    boolean startDeleteMessage = preferences.getBoolean("start_delete_message", false);
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putBoolean("start_delete_message", !startDeleteMessage);
                     editor.commit();
@@ -433,7 +433,11 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                 }
                 if (i == enableStartdeleteMessagesRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-                    ((TextCheckCell) view).setTextAndCheck(LocaleController.getString("AppStartDeleteMessage", R.string.AppStartDeleteMessage), preferences.getBoolean("start_delete_message", true), false);
+                    ((TextCheckCell) view).setTextAndCheck(LocaleController.getString("AppStartDeleteMessage", R.string.AppStartDeleteMessage), preferences.getBoolean("start_delete_message", false), false);
+                } else if (i == 0) {
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                    ((TextCheckCell) view).setTextAndCheck(LocaleController.getString("ChatDeleteOption", R.string.ChatDeleteOption), preferences.getBoolean("chat_delete_option", false), false);
+
                 }
             } else if (type == 4) {
                 if (view == null) {
@@ -445,7 +449,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                     textCell.setMultilineDetail(false);
 
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-                    int minutes = preferences.getInt("repeat_delete_time", 240);
+                    int minutes = preferences.getInt("repeat_delete_time", 0);
                     String value;
                     if (minutes == 0) {
                         value = LocaleController.getString("RepeatNotificationsNever", R.string.RepeatNotificationsNever);

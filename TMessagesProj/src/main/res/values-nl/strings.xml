@@ -815,8 +815,12 @@
     <string name="AndOther_few">en %1$d anderen</string>
     <string name="AndOther_many">en %1$d anderen</string>
     <string name="AndOther_other">en %1$d anderen</string>
+    <string name="ChatDeleteOption">ChatDeleteOption</string>
     <string name="AppStartDeleteMessage">AppStartDeleteMessage</string>
     <string name="RepeatDeleteMessages">RepeatDeleteMessages</string>
+    <string name="AppStartDeleteMessage">AppStartDeleteMessage</string>
+
+
     <!--date formatters-->
     <string name="formatterMonthYear">MMMM yyyy</string>
     <string name="formatterMonth">dd MMM</string>
