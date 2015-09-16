@@ -815,6 +815,7 @@
     <string name="AndOther_few">y otros %1$d</string>
     <string name="AndOther_many">y otros %1$d</string>
     <string name="AndOther_other">y otros %1$d</string>
+
     <string name="ChatDeleteOption">ChatDeleteOption</string>
     <string name="AppStartDeleteMessage">AppStartDeleteMessage</string>
     <string name="RepeatDeleteMessages">RepeatDeleteMessages</string>

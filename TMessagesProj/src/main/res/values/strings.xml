@@ -815,10 +815,12 @@
     <string name="AndOther_many">and %1$d others</string>
     <string name="AndOther_other">and %1$d others</string>
 
-    <string name="ChatDeleteOption">Chat delete option</string>
+    <string name="ChatDeleteOption">Delete all chat room</string>
     <string name="AppStartDeleteMessage">Delete all chat history at startup</string>
     <string name="RepeatDeleteMessages">Delete all chat history at every</string>
-    <string name="ChatDeleteOptionAlert">Default option is only chat delete. It won't be working unless you enable AppStartDeleteMessage or RepeatDeleteMessages</string>
+    <string name="ChatDeleteOptionAlert">\"Off\" status means \“DELETE only chat history\”(default setting). \n\"On\" means \"DELETE ALL chat room\". \n\nIt won\'t be working unless you enable \"AppStartDeleteMessage\" or \"RepeatDeleteMessages\" option.</string>
+
+
 
     <!--date formatters-->
     <string name="formatterMonthYear">MMMM yyyy</string>

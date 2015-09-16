@@ -815,10 +815,11 @@
     <string name="AndOther_few">e %1$d outros</string>
     <string name="AndOther_many">e %1$d outros</string>
     <string name="AndOther_other">e %1$d outros</string>
+
     <string name="ChatDeleteOption">ChatDeleteOption</string>
     <string name="AppStartDeleteMessage">AppStartDeleteMessage</string>
     <string name="RepeatDeleteMessages">RepeatDeleteMessages</string>
-    <string name="AppStartDeleteMessage">AppStartDeleteMessage</string>
+    <string name="ChatDeleteOptionAlert">ChatDeleteOptionAlert</string>
 
 
     <!--date formatters-->

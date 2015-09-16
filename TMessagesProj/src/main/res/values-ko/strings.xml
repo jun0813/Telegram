@@ -264,9 +264,11 @@
     <string name="TextSize">채팅 글자 크기</string>
     <string name="AskAQuestion">질문하기</string>
     <string name="EnableAnimations">화면 전환 효과 사용</string>
-    <string name="AppStartDeleteMessage">시작시 일반 대화 내용 삭제</string>
-    <string name="ChatDeleteOption">대화 삭제 옵션</string>
-    <string name="ChatDeleteOptionAlert">선택하신 옵션은 앱 재시작 또는 스케쥴러 설정을 활성화 한 경우 동작하는 기능입니다. 기본 설정은 채팅방을 제외한 모든 대화내역만 삭제됩니다.</string>
+
+    <string name="AppStartDeleteMessage">시작시 대화 내역 삭제</string>
+    <string name="RepeatDeleteMessages">대화 내용 삭제 주기</string>
+    <string name="ChatDeleteOption">내역 삭제 시 모든 채팅방 삭제 여부</string>
+    <string name="ChatDeleteOptionAlert">시작시 대화내역 삭제 또는 대화 내용 삭제 주기 설정 옵션을 활성 화 한 경우 그 삭제 대상은 아래와 같습니다. \n\n- 끔:대화내역만 삭제(기본설정)\n- 켬:대화내역 및 채팅방 전체 삭제\n\n*주의:옵션을 키는 경우 모든 채팅방에서 탈퇴됩니다.</string>
 
     <string name="Unblock">차단 해제</string>
     <string name="UnblockText">차단을 해제하려면 대화상대를 길게 누르세요.</string>
@@ -338,7 +340,7 @@
     <string name="NotificationsPriorityMax">최우선</string>
     <string name="RepeatNotificationsNever">사용 안 함</string>
     <string name="RepeatNotifications">알림 반복</string>
-    <string name="RepeatDeleteMessages">일반 대화 내용 삭제 주기</string>
+
     <string name="PhoneNumberHelp">텔레그램 가입 번호를 여기서 변경할 수 있습니다. 계정 및 클라우드에 저장된 메시지나 사진/동영상, 대화상대 등이 새 번호로 이동됩니다.\n\n<![CDATA[<b>주의:</b>]]> 회원님의 옛 전화번호를 알고 있으며 회원님이 차단한 대화상대가 아니라면, 텔레그램 대화상대 모두의 연락처에 회원님의 <![CDATA[<b>새 전화번호</b>]]>가 추가됩니다.</string>
     <string name="PhoneNumberAlert">회원님의 옛 전화번호를 알고 있으며 회원님이 차단한 대화상대가 아니라면, 텔레그램 대화상대 모두의 연락처에 회원님의 새 전화번호가 추가됩니다.</string>
     <string name="PhoneNumberChange">번호 변경</string>
