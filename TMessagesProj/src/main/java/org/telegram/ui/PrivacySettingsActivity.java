@@ -50,6 +50,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
 
     private ListAdapter listAdapter;
     private ListView listView;
+    private View customView;
 
     private int privacySectionRow;
     private int blockedRow;
@@ -58,6 +59,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
     private int securitySectionRow;
     private int sessionsRow;
     private int enableStartdeleteMessagesRow;
+    private int enableHistorydeleteOptionRow;
     private int repeatDeleteMessagesRow;
     private int passwordRow;
     private int passcodeRow;
@@ -81,6 +83,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         securitySectionRow = rowCount++;
         enableStartdeleteMessagesRow = rowCount++;
         repeatDeleteMessagesRow = rowCount++;
+        enableHistorydeleteOptionRow = rowCount++;
         passcodeRow = rowCount++;
         passwordRow = rowCount++;
         sessionsRow = rowCount++;
@@ -130,6 +133,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+                customView = view;
                 if (i == blockedRow) {
                     presentFragment(new BlockedUsersActivity());
                 } else if (i == sessionsRow) {
@@ -209,6 +213,41 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                     if (view instanceof TextCheckCell) {
                         ((TextCheckCell) view).setChecked(!startDeleteMessage);
                     }
+                } else if (i == enableHistorydeleteOptionRow) {
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                    boolean deleteHistoryChat = preferences.getBoolean("delete_history_chat", false);
+
+                    if (!deleteHistoryChat) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                        builder.setTitle(LocaleController.getString("ChatDeleteOption", R.string.ChatDeleteOption));
+                        builder.setMessage(LocaleController.getString("ChatDeleteOptionAlert", R.string.ChatDeleteOptionAlert));
+                        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putBoolean("delete_history_chat", true);
+                                editor.commit();
+
+                                if (customView instanceof TextCheckCell) {
+                                    ((TextCheckCell) customView).setChecked(true);
+                                }
+                            }
+                        });
+
+                        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                        showDialog(builder.create());
+                    } else {
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putBoolean("delete_history_chat", !deleteHistoryChat);
+                        editor.commit();
+
+                        if (view instanceof TextCheckCell) {
+                            ((TextCheckCell) view).setChecked(!deleteHistoryChat);
+                        }
+                    }
+
+
                 } else if (i == repeatDeleteMessagesRow) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                     builder.setTitle(LocaleController.getString("RepeatDeleteMessages", R.string.RepeatDeleteMessages));
@@ -335,7 +374,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
 
         @Override
         public boolean isEnabled(int i) {
-            return i == passcodeRow || i == passwordRow || i == blockedRow || i == sessionsRow || i == enableStartdeleteMessagesRow || i == repeatDeleteMessagesRow ||
+            return i == passcodeRow || i == passwordRow || i == blockedRow || i == sessionsRow || i == enableStartdeleteMessagesRow || i == repeatDeleteMessagesRow || i== enableHistorydeleteOptionRow ||
                     i == lastSeenRow && !ContactsController.getInstance().getLoadingLastSeenInfo() || i == deleteAccountRow && !ContactsController.getInstance().getLoadingDeleteInfo();
         }
 
@@ -434,9 +473,10 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                 if (i == enableStartdeleteMessagesRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                     ((TextCheckCell) view).setTextAndCheck(LocaleController.getString("AppStartDeleteMessage", R.string.AppStartDeleteMessage), preferences.getBoolean("start_delete_message", false), false);
-                } else if (i == 0) {
+                } else if (i == enableHistorydeleteOptionRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-                    ((TextCheckCell) view).setTextAndCheck(LocaleController.getString("ChatDeleteOption", R.string.ChatDeleteOption), preferences.getBoolean("chat_delete_option", false), false);
+                    ((TextCheckCell) view).setTextAndCheck(LocaleController.getString("ChatDeleteOption", R.string.ChatDeleteOption), preferences.getBoolean("delete_history_chat", false), false);
+
 
                 }
             } else if (type == 4) {
@@ -472,7 +512,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                 return 1;
             } else if (i == securitySectionRow || i == deleteAccountSectionRow || i == privacySectionRow) {
                 return 2;
-            } else if (i == enableStartdeleteMessagesRow) {
+            } else if (i == enableStartdeleteMessagesRow || i == enableHistorydeleteOptionRow) {
                 return 3;
             } else if (i == repeatDeleteMessagesRow) {
                 return 4;
