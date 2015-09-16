@@ -71,6 +71,7 @@ android {
     }
 
     defaultConfig {
+        applicationId "org.telegramsecureplus.messenger"
         minSdkVersion 8
         targetSdkVersion 22
         versionCode 572

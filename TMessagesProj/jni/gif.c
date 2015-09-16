@@ -589,7 +589,7 @@ static jint open(GifFileType *GifFileIn, int Error, int startPos, JNIEnv *env, j
 	return (jint)(Error == 0 ? info : NULL);
 }
 
-JNIEXPORT jlong JNICALL Java_org_telegram_ui_Components_GifDrawable_getAllocationByteCount(JNIEnv *env, jclass class, jobject gifInfo) {
+JNIEXPORT jlong JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_getAllocationByteCount(JNIEnv *env, jclass class, jobject gifInfo) {
 	GifInfo *info = (GifInfo *)gifInfo;
 	if (info == NULL) {
         return 0;
@@ -602,7 +602,7 @@ JNIEXPORT jlong JNICALL Java_org_telegram_ui_Components_GifDrawable_getAllocatio
 	return sum;
 }
 
-JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_reset(JNIEnv *env, jclass class, jobject gifInfo) {
+JNIEXPORT void JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_reset(JNIEnv *env, jclass class, jobject gifInfo) {
 	GifInfo *info = (GifInfo *)gifInfo;
 	if (info == NULL) {
         return;
@@ -610,7 +610,7 @@ JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_reset(JNIEnv 
 	reset(info);
 }
 
-JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_setSpeedFactor(JNIEnv *env, jclass class, jobject gifInfo, jfloat factor) {
+JNIEXPORT void JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_setSpeedFactor(JNIEnv *env, jclass class, jobject gifInfo, jfloat factor) {
 	GifInfo *info = (GifInfo *)gifInfo;
 	if (info == NULL) {
         return;
@@ -618,7 +618,7 @@ JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_setSpeedFacto
 	info->speedFactor = factor;
 }
 
-JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_seekToTime(JNIEnv *env, jclass class, jobject gifInfo, jint desiredPos, jintArray jPixels) {
+JNIEXPORT void JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_seekToTime(JNIEnv *env, jclass class, jobject gifInfo, jint desiredPos, jintArray jPixels) {
 	GifInfo *info = (GifInfo *)gifInfo;
 	if (info == NULL || jPixels == NULL) {
         return;
@@ -665,7 +665,7 @@ JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_seekToTime(JN
     }
 }
 
-JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_seekToFrame(JNIEnv *env, jclass class, jobject gifInfo, jint desiredIdx, jintArray jPixels) {
+JNIEXPORT void JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_seekToFrame(JNIEnv *env, jclass class, jobject gifInfo, jint desiredIdx, jintArray jPixels) {
 	GifInfo *info = (GifInfo *)gifInfo;
 	if (info == NULL|| jPixels==NULL) {
         return;
@@ -701,7 +701,7 @@ JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_seekToFrame(J
     }
 }
 
-JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_renderFrame(JNIEnv *env, jclass class, jintArray jPixels, jobject gifInfo, jintArray metaData) {
+JNIEXPORT void JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_renderFrame(JNIEnv *env, jclass class, jintArray jPixels, jobject gifInfo, jintArray metaData) {
 	GifInfo *info = (GifInfo *)gifInfo;
 	if (info == NULL || jPixels == NULL) {
         return;
@@ -752,7 +752,7 @@ JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_renderFrame(J
 	(*env)->ReleaseIntArrayElements(env, metaData, rawMetaData, 0);
 }
 
-JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_free(JNIEnv *env, jclass class, jobject gifInfo) {
+JNIEXPORT void JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_free(JNIEnv *env, jclass class, jobject gifInfo) {
 	if (gifInfo == NULL) {
         return;
     }
@@ -765,7 +765,7 @@ JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_free(JNIEnv *
 	cleanUp(info);
 }
 
-JNIEXPORT jstring JNICALL Java_org_telegram_ui_Components_GifDrawable_getComment(JNIEnv *env, jclass class, jobject gifInfo) {
+JNIEXPORT jstring JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_getComment(JNIEnv *env, jclass class, jobject gifInfo) {
 	if (gifInfo == NULL) {
         return NULL;
     }
@@ -773,14 +773,14 @@ JNIEXPORT jstring JNICALL Java_org_telegram_ui_Components_GifDrawable_getComment
 	return (*env)->NewStringUTF(env, info->comment);
 }
 
-JNIEXPORT jint JNICALL Java_org_telegram_ui_Components_GifDrawable_getLoopCount(JNIEnv *env, jclass class, jobject gifInfo) {
+JNIEXPORT jint JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_getLoopCount(JNIEnv *env, jclass class, jobject gifInfo) {
 	if (gifInfo == NULL) {
         return 0;
     }
 	return ((GifInfo *)gifInfo)->loopCount;
 }
 
-JNIEXPORT jint JNICALL Java_org_telegram_ui_Components_GifDrawable_getDuration(JNIEnv *env, jclass class, jobject gifInfo) {
+JNIEXPORT jint JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_getDuration(JNIEnv *env, jclass class, jobject gifInfo) {
 	GifInfo *info = (GifInfo *)gifInfo;
 	if (info == NULL) {
         return 0;
@@ -793,7 +793,7 @@ JNIEXPORT jint JNICALL Java_org_telegram_ui_Components_GifDrawable_getDuration(J
 	return sum;
 }
 
-JNIEXPORT jint JNICALL Java_org_telegram_ui_Components_GifDrawable_getCurrentPosition(JNIEnv *env, jclass class, jobject gifInfo) {
+JNIEXPORT jint JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_getCurrentPosition(JNIEnv *env, jclass class, jobject gifInfo) {
 	GifInfo *info = (GifInfo *)gifInfo;
 	if (info == NULL) {
         return 0;
@@ -811,7 +811,7 @@ JNIEXPORT jint JNICALL Java_org_telegram_ui_Components_GifDrawable_getCurrentPos
 	return (int) (sum + remainder);
 }
 
-JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_saveRemainder(JNIEnv *env, jclass class, jobject gifInfo) {
+JNIEXPORT void JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_saveRemainder(JNIEnv *env, jclass class, jobject gifInfo) {
 	GifInfo *info = (GifInfo *)gifInfo;
 	if (info == NULL) {
         return;
@@ -819,7 +819,7 @@ JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_saveRemainder
 	info->lastFrameReaminder = getRealTime() - info->nextStartTime;
 }
 
-JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_restoreRemainder(JNIEnv *env, jclass class, jobject gifInfo) {
+JNIEXPORT void JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_restoreRemainder(JNIEnv *env, jclass class, jobject gifInfo) {
 	GifInfo *info = (GifInfo *)gifInfo;
 	if (info == NULL || info->lastFrameReaminder == ULONG_MAX) {
         return;
@@ -828,7 +828,7 @@ JNIEXPORT void JNICALL Java_org_telegram_ui_Components_GifDrawable_restoreRemain
 	info->lastFrameReaminder = ULONG_MAX;
 }
 
-JNIEXPORT jint JNICALL Java_org_telegram_ui_Components_GifDrawable_openFile(JNIEnv *env, jclass class, jintArray metaData, jstring jfname) {
+JNIEXPORT jint JNICALL Java_org_telegramsecureplus_ui_Components_GifDrawable_openFile(JNIEnv *env, jclass class, jintArray metaData, jstring jfname) {
 	if (jfname == NULL) {
 		setMetaData(0, 0, 0, D_GIF_ERR_OPEN_FAILED, env, metaData);
 		return (jint) NULL;
