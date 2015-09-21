@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -38,6 +39,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 
 import org.telegramsecureplus.android.AndroidUtilities;
 import org.telegramsecureplus.PhoneFormat.PhoneFormat;
@@ -104,9 +108,14 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
     private boolean tabletFullSize;
 
     private Runnable lockRunnable;
+    private Tracker mTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        ApplicationLoader application = (ApplicationLoader) getApplication();
+        mTracker = application.getDefaultTracker();
+
         ApplicationLoader.postInitApplication();
 
         if (!UserConfig.isClientActivated()) {
@@ -132,8 +141,6 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setTheme(R.style.Theme_TMessages);
         getWindow().setBackgroundDrawableResource(R.drawable.transparent);
-
-
         super.onCreate(savedInstanceState);
 
         if (UserConfig.passcodeHash.length() != 0 && UserConfig.appLocked) {
@@ -1104,6 +1111,18 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             FileLog.e("tmessages", e);
         }
         return null;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     @Override
