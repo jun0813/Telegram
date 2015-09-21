@@ -258,7 +258,11 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                                     LocaleController.formatPluralString("Minutes", 30),
                                     LocaleController.formatPluralString("Hours", 1),
                                     LocaleController.formatPluralString("Hours", 2),
-                                    LocaleController.formatPluralString("Hours", 4)
+                                    LocaleController.formatPluralString("Hours", 4),
+                                    LocaleController.formatPluralString("Hours", 12),
+                                    LocaleController.formatPluralString("Days", 1),
+                                    LocaleController.formatPluralString("Weeks", 1),
+                                    LocaleController.formatPluralString("Months", 1)
                             }, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -275,7 +279,16 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                                         minutes = 60 * 2;
                                     } else if (which == 6) {
                                         minutes = 60 * 4;
+                                    } else if (which == 7) {
+                                        minutes = 60 * 12;
+                                    } else if (which == 8) {
+                                        minutes = 60 * 24;
+                                    } else if (which == 9) {
+                                        minutes = 60 * 24 * 7;
+                                    } else if (which == 10) {
+                                        minutes = 60 * 24 * 30;
                                     }
+
                                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                                     preferences.edit().putInt("repeat_delete_time", minutes).commit();
                                     if (listView != null) {

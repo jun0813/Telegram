@@ -6,9 +6,10 @@ repositories {
 
 dependencies {
     compile 'com.android.support:support-v4:22.2.+'
-    compile 'com.google.android.gms:play-services:3.2.+'
+    compile 'com.google.android.gms:play-services:7.3.+'
     compile 'net.hockeyapp.android:HockeySDK:3.5.+'
     compile 'com.googlecode.mp4parser:isoparser:1.0.+'
+
 }
 
 android {
@@ -72,7 +73,7 @@ android {
 
     defaultConfig {
         applicationId "org.telegramsecureplus.messenger"
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 22
         versionCode 572
         versionName "3.0.1"

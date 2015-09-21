@@ -25,6 +25,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Logger;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -49,6 +52,7 @@ public class ApplicationLoader extends Application {
     private GoogleCloudMessaging gcm;
     private AtomicInteger msgId = new AtomicInteger();
     private String regid;
+    private Tracker mTracker;
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
@@ -71,6 +75,16 @@ public class ApplicationLoader extends Application {
 
     public static int getSelectedColor() {
         return selectedColor;
+    }
+
+    synchronized public Tracker getDefaultTracker() {
+        if (mTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            analytics.enableAutoActivityReports(this);
+            mTracker = analytics.newTracker("UA-67855778-1");
+            mTracker.enableAutoActivityTracking(true);
+        }
+        return mTracker;
     }
 
     public static void reloadWallpaper() {
@@ -174,6 +188,8 @@ public class ApplicationLoader extends Application {
 
         ContactsController.getInstance().checkAppAccount();
         MediaController.getInstance();
+
+
     }
 
     @Override
