@@ -2,7 +2,7 @@
 
 
 <resources>
-    <string name="AppName">Telegram++</string>
+    <string name="AppName">Telegram Plus</string>
     <string name="LanguageName">English</string>
     <string name="LanguageNameInEnglish">English</string>
     <string name="LanguageCode">en</string>
@@ -629,7 +629,7 @@
     <string name="NoUsernameFound">There is no Telegram account with this username.</string>
     <string name="BotCantJoinGroups">This bot can\'t join groups.</string>
     <!--Intro view-->
-    <string name="Page1Title">Telegram++</string>
+    <string name="Page1Title">Telegram Plus</string>
     <string name="Page2Title">Fast</string>
     <string name="Page3Title">Free</string>
     <string name="Page4Title">Secure</string>
