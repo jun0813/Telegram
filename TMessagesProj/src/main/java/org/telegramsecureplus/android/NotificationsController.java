@@ -46,8 +46,10 @@ import org.telegramsecureplus.messenger.ApplicationLoader;
 import org.telegramsecureplus.ui.LaunchActivity;
 import org.telegramsecureplus.ui.PopupNotificationActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -338,14 +340,19 @@ public class NotificationsController {
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
             int minutes = preferences.getInt("repeat_delete_time", 0);
             if (minutes > 0) {
-                Log.d("NotificationsController::scheduleDeleteMessageRepeat", "minutes = " + minutes);
                 alarmManager.cancel(pintent);
-                alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + minutes * 60 * 1000 , minutes * 60 * 1000, pintent);
+                long now = System.currentTimeMillis();
+                Date date = new Date(now + minutes * 60 * 1000);
+
+                Log.d("NotificationsController::scheduleDeleteMessageRepeat", "minutes = " + minutes + " now=" + date.toString());
+                //alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + minutes * 60 * 1000 , minutes * 60 * 1000, pintent);
+                alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, date.getTime(), minutes * 60 * 1000, pintent);
             } else {
                 alarmManager.cancel(pintent);
             }
         } catch (Exception e) {
             FileLog.e("tmessages", e);
+            e.printStackTrace();
         }
 
     }

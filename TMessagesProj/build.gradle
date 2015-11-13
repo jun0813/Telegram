@@ -76,6 +76,6 @@ android {
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 572
-        versionName "3.0.2"
+        versionName "3.0.3"
     }
 }
