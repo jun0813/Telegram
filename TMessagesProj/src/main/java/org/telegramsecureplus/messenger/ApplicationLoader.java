@@ -228,6 +228,8 @@ public class ApplicationLoader extends Application {
                 PendingIntent pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), 0);
                 AlarmManager alarm = (AlarmManager)applicationContext.getSystemService(Context.ALARM_SERVICE);
                 alarm.cancel(pintent);
+
+                NotificationsController.getInstance().scheduleDeleteMessageRepeat();
             }
         } else {
             stopPushService();
