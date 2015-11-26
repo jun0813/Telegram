@@ -334,29 +334,6 @@ public class NotificationsController {
         return msg;
     }
 
-    public void scheduleDeleteMessageRepeat() {
-        try {
-            PendingIntent pintent = PendingIntent.getService(ApplicationLoader.applicationContext, 0, new Intent(ApplicationLoader.applicationContext, DeleteMessageRepeat.class), 0);
-            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-            int minutes = preferences.getInt("repeat_delete_time", 0);
-            if (minutes > 0) {
-                alarmManager.cancel(pintent);
-                long now = System.currentTimeMillis();
-                Date date = new Date(now + minutes * 60 * 1000);
-
-                Log.d("NotificationsController::scheduleDeleteMessageRepeat", "minutes = " + minutes + " now=" + date.toString());
-                //alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + minutes * 60 * 1000 , minutes * 60 * 1000, pintent);
-                alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, date.getTime(), minutes * 60 * 1000, pintent);
-            } else {
-                alarmManager.cancel(pintent);
-            }
-        } catch (Exception e) {
-            FileLog.e("tmessages", e);
-            e.printStackTrace();
-        }
-
-    }
-
     private void scheduleNotificationRepeat() {
         try {
             PendingIntent pintent = PendingIntent.getService(ApplicationLoader.applicationContext, 0, new Intent(ApplicationLoader.applicationContext, NotificationRepeat.class), 0);

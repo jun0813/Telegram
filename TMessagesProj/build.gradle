@@ -9,6 +9,9 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.3.+'
     compile 'net.hockeyapp.android:HockeySDK:3.5.+'
     compile 'com.googlecode.mp4parser:isoparser:1.0.+'
+    // Test libraries
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.0'
 
 }
 
@@ -76,6 +79,6 @@ android {
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 572
-        versionName "3.0.3"
+        versionName "3.0.4"
     }
 }
