@@ -172,6 +172,13 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name="org.telegramsecureplus.android.DeleteMessageBroadcastReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <receiver android:name="org.telegramsecureplus.android.WearReplyReceiver" android:enabled="true"/>
 
         <uses-library android:name="com.sec.android.app.multiwindow" android:required="false" />

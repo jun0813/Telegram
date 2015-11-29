@@ -23,6 +23,7 @@ import android.widget.ListView;
 
 import org.telegramsecureplus.android.AndroidUtilities;
 import org.telegramsecureplus.android.ContactsController;
+import org.telegramsecureplus.android.DeleteMessageController;
 import org.telegramsecureplus.android.LocaleController;
 import org.telegramsecureplus.android.NotificationCenter;
 import org.telegramsecureplus.android.NotificationsController;
@@ -294,7 +295,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                                     if (listView != null) {
                                         listView.invalidateViews();
                                     }
-                                    NotificationsController.getInstance().scheduleDeleteMessageRepeat();
+                                    DeleteMessageController.getInstance().scheduleDeleteMessageRepeat(ApplicationLoader.applicationContext);
                                 }
                             }
                     );
